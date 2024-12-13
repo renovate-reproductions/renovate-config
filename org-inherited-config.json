@@ -1,4 +1,105 @@
 {
-  "onboarding": false,
-  "requireConfig": "optional"
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "baseBranches": ["main", "/^release\\/.*/"],
+  "commitMessageSuffix": "AB#0000",
+  "configMigration": true,
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["major", "minor"],
+      "enabled": false
+    },
+    {
+      "matchDatasources": ["github-releases"],
+      "matchPackageNames": ["hashicorp/terraform"],
+      "allowedVersions": "=1.9",
+      "prBodyNotes": ["BREAKING CHANGE"],
+      "semanticCommitType": "fix",
+      "extends": [":semanticCommitTypeAll(fix)"],
+      "groupName": "terraform-providers",
+      "enabled": true
+    },
+    {
+      "matchDatasources": ["terraform-provider"],
+      "matchPackageNames": ["hashicorp/azuread"],
+      "allowedVersions": "=3.0.2",
+      "prBodyNotes": ["BREAKING CHANGE"],
+      "semanticCommitType": "fix",
+      "extends": [":semanticCommitTypeAll(fix)"],
+      "groupName": "terraform-providers",
+      "enabled": true
+    },
+    {
+      "matchDatasources": ["terraform-provider"],
+      "matchPackageNames": ["hashicorp/azurerm"],
+      "allowedVersions": "=4.11.0",
+      "prBodyNotes": ["BREAKING CHANGE"],
+      "semanticCommitType": "fix",
+      "extends": [":semanticCommitTypeAll(fix)"],
+      "groupName": "terraform-providers",
+      "enabled": true
+    },
+    {
+      "matchDatasources": ["terraform-provider"],
+      "matchPackageNames": ["Azure/azapi"],
+      "allowedVersions": "=2.0.1",
+      "prBodyNotes": ["BREAKING CHANGE"],
+      "semanticCommitType": "fix",
+      "extends": [":semanticCommitTypeAll(fix)"],
+      "groupName": "terraform-providers",
+      "enabled": true
+    }
+  ],
+  "reviewersFromCodeOwners": true,
+  "schedule": [
+    "after 12am every weekday",
+    "every weekend"
+  ],
+  "timezone": "UTC",
+  "semanticCommits": "enabled",
+  "vulnerabilityAlerts": {
+    "schedule": [],
+    "rangeStrategy": "update-lockfile",
+    "commitMessageSuffix": "AB#0000 [SECURITY]",
+    "branchTopic": "{{{datasource}}}-{{{depName}}}-vulnerability",
+    "prCreation": "immediate",
+    "packageRules": [
+      {
+        "matchUpdateTypes": ["minor"],
+        "enabled": true
+      }
+    ]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/[^/]+\\.ya?ml$"],
+      "matchStrings": ["\\snpx semantic-release@(?<currentValue>.*?)\\s"],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "semantic-release"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/[^/]+\\.ya?ml$"],
+      "matchStrings": ["\\snpm install -D conventional-changelog-conventionalcommits@(?<currentValue>.*?)\\s"],
+      "datasourceTemplate": "npm",
+      "depNameTemplate": "conventional-changelog-conventionalcommits"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.tflint\\.hcl$"],
+      "matchStrings": ["\\s+version\\s*=\\s*\"(?<currentValue>[0-9\\.]+)\".*\\n\\s+source\\s*=\\s*\"github.com/terraform-linters/tflint-ruleset-terraform\""],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "terraform-linters/tflint-ruleset-terraform",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    },
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.tflint\\.hcl$"],
+      "matchStrings": ["\\s+version\\s*=\\s*\"(?<currentValue>[0-9\\.]+)\".*\\n\\s+source\\s*=\\s*\"github.com/terraform-linters/tflint-ruleset-azurerm\""],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "terraform-linters/tflint-ruleset-azurerm",
+      "extractVersionTemplate": "^v(?<version>.+)$"
+    }
+  ]
 }
